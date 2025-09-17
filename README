@@ -1,0 +1,85 @@
+Histograma Paralelo
+
+Descripción del proyecto
+------------------------
+Este proyecto implementa el cálculo de histogramas paralelos en C++ usando OpenMP y std::thread,
+con tres variantes de paralelización:
+
+1. Privado por hilo + reducción final
+2. Global con mutex/lock
+3. Global usando variables atómicas
+
+El proyecto incluye un script de benchmark en Bash que compila, ejecuta y mide el rendimiento de todas
+las variantes, así como un script en Python que procesa los resultados y genera gráficas de rendimiento.
+Se recolectan tiempos de ejecución y métricas de hardware mediante la herramienta perf.
+
+Estructura de archivos
+----------------------
+* histo_openmp.cpp     → Implementación con OpenMP (3 variantes).
+* histo_threads.cpp    → Implementación con std::thread (3 variantes).
+* run_benchmarks.sh    → Script principal. Compila, ejecuta todas las pruebas, recolecta tiempos
+                         y métricas con perf, y guarda resultados en CSV.
+* plot_results.py      → Script Python que procesa el CSV y genera gráficas.
+* README.txt           → Este documento.
+
+Carpetas y archivos generados automáticamente
+----------------------------------
+
+*  - histo_openmp      → Binario compilado con OpenMP.
+   - histo_threads     → Binario compilado con std::thread.
+   
+* outputs/             → Contiene todos los archivos generados por el script de benchmark:
+   - results.csv       → Archivo principal con todos los resultados promediados y crudos.
+   - temp_out.txt      → Salida temporal de cada ejecución (contiene t_gen, t_count, etc.).
+   - temp_time.txt     → Salida temporal de tiempos del comando /usr/bin/time.
+   - perf_out.txt      → Salida temporal de perf con métricas de hardware.
+
+* graficas/            → Contiene todas las gráficas generadas por plot_results.py:
+   - execution_time.png   → Tiempo de ejecución total vs número de threads.
+   - speedup.png          → Speedup obtenido vs número de threads.
+   - efficiency.png       → Eficiencia (speedup / threads).
+   - cpu_usage.png        → % de CPU usado.
+   - cache_misses.png     → Fallos de caché (escala logarítmica).
+
+Requisitos
+----------
+* C++17 o superior.
+* GCC/Clang con soporte OpenMP.
+* Python 3 con paquetes: pandas, matplotlib, numpy (instalar con pip).
+* perf (opcional, pero recomendado) para medir métricas de hardware en Linux.
+
+Ejecución de benchmarks
+-----------------------
+El flujo de uso típico es:
+
+1. Permitir acceso a perf (necesario antes de correr el script):
+   sudo sysctl kernel.perf_event_paranoid=-1
+
+2. Ejecutar el script de benchmarks:
+   bash run_benchmarks.sh
+
+Esto compilará los programas, ejecutará todas las variantes y guardará:
+   - Binarios en outputs/
+   - CSV consolidado en outputs/results.csv
+   - Archivos temporales de ejecución y métricas en outputs/
+
+Procesamiento y gráficas
+------------------------
+Después de ejecutar los benchmarks:
+
+   python3 plot_results.py
+
+Esto generará las gráficas en la carpeta graficas/ para visualizar:
+   * Tiempos de ejecución
+   * Speedup
+   * Eficiencia
+   * Uso de CPU
+   * Fallos de caché
+
+Notas
+-----
+* La semilla garantiza reproducibilidad.
+* La variante "privada con reducción" suele ser la más rápida y escalable.
+* El CSV contiene todos los experimentos listos para análisis.
+* Los archivos temporales en outputs/ son útiles para depuración, pero el análisis principal se
+  realiza a partir de results.csv.

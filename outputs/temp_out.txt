@@ -1,0 +1,2 @@
+total counts=99859436
+t_gen=1.06634 t_count=0.428613 t_merge=0 total=1.49495
